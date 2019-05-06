@@ -89,7 +89,7 @@ namespace ChancePicker
         {
             foreach (var wChoice in weightedChoices)
             {
-                Console.WriteLine($"{wChoice.Name}  Points:{wChoice.Points} GenerationChance:{wChoice.Probability}%");
+                Console.WriteLine($"{wChoice.Name}  Points:{wChoice.Points}   GenerationChance:{wChoice.Probability}%");
             }
         }
     }

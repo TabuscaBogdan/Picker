@@ -22,6 +22,19 @@ namespace ChancePicker
             picker.AddChoice(ch6);
 
             picker.ShowStatus();
+            Console.WriteLine();
+
+            int attempts;
+            var number = Console.ReadLine();
+            int.TryParse(number,out attempts);
+
+            for (int i = 0; i < attempts; i++)
+            {
+                var choice = picker.PickWeightedChoice();
+                picker.UpdateChoice(choice,2);
+            }
+
+            picker.ShowStatus();
         }
     }
 }
