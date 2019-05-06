@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace ChancePicker
@@ -8,11 +9,13 @@ namespace ChancePicker
     {
         public int totalPoints;
         public List<WeightedChoice> weightedChoices;
+        private Random dice;
 
         public WeightedPicker()
         {
             totalPoints = 0;
             weightedChoices = new List<WeightedChoice>();
+            dice = new Random();
         }
 
         public void AddChoice(Choice choice)
@@ -28,6 +31,29 @@ namespace ChancePicker
             UpdateWeightedChoiceList();
         }
 
+        public void UpdateChoice(string choiceName, int points)
+        {
+            var choice = weightedChoices.FirstOrDefault(c => c.Name == choiceName);
+            
+            choice.Points += points;
+            if (choice.Points <= 0)
+            {
+                points = choice.Points - points;
+                weightedChoices.Remove(choice);
+            }
+
+            totalPoints += points;
+            UpdateWeightedChoiceList();
+        }
+
+        public void RemoveChoice(string choiceName)
+        {
+            var choice = weightedChoices.FirstOrDefault(c => c.Name == choiceName);
+            totalPoints -= choice.Points;
+            weightedChoices.Remove(choice);
+            UpdateWeightedChoiceList();
+        }
+
         private void UpdateWeightedChoiceList()
         {
             foreach (var wChoice in weightedChoices)
@@ -40,6 +66,30 @@ namespace ChancePicker
             {
                 cumulativeProbability += wChoice.Probability;
                 wChoice.CumulativeProbability = cumulativeProbability;
+            }
+        }
+
+        public string PickWeightedChoice()
+        {
+            double diceRoll = dice.NextDouble();
+            diceRoll *= 100;
+
+            for (int i = 0; i < weightedChoices.Count; i++)
+            {
+                if (weightedChoices[i].CumulativeProbability >= diceRoll)
+                {
+                    return weightedChoices[i].Name;
+                }
+            }
+
+            return "";
+        }
+
+        public void ShowStatus()
+        {
+            foreach (var wChoice in weightedChoices)
+            {
+                Console.WriteLine($"{wChoice.Name}  Points:{wChoice.Points} GenerationChance:{wChoice.Probability}%");
             }
         }
     }
